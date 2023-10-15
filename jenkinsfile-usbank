@@ -1,0 +1,21 @@
+
+    def mavenHome = tool name: 'maven3.8.2'
+    stage('1clone'){
+        git "https://github.com/edouard15/maven-web-application.git"
+    }
+    stage('2test+build'){
+        "${mavenHome}bin/mvn clean package"
+    }
+    stage('3CodeQualityAnalysis'){
+         "${mavenHome}bin/mvn sonar:sonar"
+        
+    }
+    stage('4UploadArtifact'){
+        "${mavenHome}bin/mvn deploy"
+    
+    }
+    stage('deploy2UAT'){
+   deploy adapters: [tomcat9(credentialsId: 'tomcat-credential', path: '', url: 'http://3.87.67.87:8177/')], contextPath: null, war: 'target/*war'     
+    }
+    
+    
